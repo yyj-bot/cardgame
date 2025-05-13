@@ -44,8 +44,8 @@ public class Battlemanager1 : MonoBehaviour
         ReadDeck();
         ShuffleDeck(0);
         ShuffleDeck(1);
-        DrawCard(0, 3);
-        DrawCard(1, 3);
+        DrawCard(0, 2);
+        DrawCard(1, 2);
     }
     public void ReadDeck()
     {
