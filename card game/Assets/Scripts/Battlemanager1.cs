@@ -2,14 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.Events;
 
 
 public enum GamePhase
 {
     playerDraw, playerAction, enemyDraw, enemyAction, gameStart
 }
-public class Battlemanager1 : MonoBehaviour
+public class Battlemanager1 : MonoSingleton<Battlemanager1>
 {
+    public static Battlemanager1 Instance;
+
     public PlayerData playerData;
     public PlayerData enemyData;
 
@@ -28,7 +31,13 @@ public class Battlemanager1 : MonoBehaviour
     public GameObject enemyicon;
 
     public GamePhase currentphase = GamePhase.gameStart;
+
+    public UnityEvent phaseChangeEvent = new UnityEvent();
     // Start is called before the first frame update
+    private void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         GameStart();
@@ -44,8 +53,10 @@ public class Battlemanager1 : MonoBehaviour
         ReadDeck();
         ShuffleDeck(0);
         ShuffleDeck(1);
-        DrawCard(0, 2);
-        DrawCard(1, 2);
+        DrawCard(0, 1);
+        DrawCard(1, 1);
+
+        currentphase = GamePhase.playerDraw;
     }
     public void ReadDeck()
     {
@@ -91,6 +102,25 @@ public class Battlemanager1 : MonoBehaviour
             shuffleDeck[rad] = temp;
         }
     }
+    public void OnPlayerDraw()
+    {
+        if(currentphase == GamePhase.playerDraw)
+        {
+            DrawCard(0, 1);
+            currentphase = GamePhase.playerAction;
+            phaseChangeEvent.Invoke();
+        }
+        
+    }
+    public void OnEnemyDraw()
+    {
+        if (currentphase == GamePhase.enemyDraw) 
+        { 
+            DrawCard(1, 1); 
+            currentphase = GamePhase.enemyAction;
+            phaseChangeEvent.Invoke();
+        }
+    }
     public void DrawCard(int _player, int _count)
     {
         List<Card> drawDeck = new List<Card>();
@@ -112,15 +142,21 @@ public class Battlemanager1 : MonoBehaviour
             drawDeck.RemoveAt(0);
         }
     }
+    public void OnclickTurnEnd()
+    {
+        TurnEnd();
+    }
     public void TurnEnd()
     {
         if (currentphase == GamePhase.playerAction)
         {
             currentphase = GamePhase.enemyDraw;
+            phaseChangeEvent.Invoke();
         }
         else if (currentphase == GamePhase.enemyAction)
         {
             currentphase = GamePhase.playerDraw;
+            phaseChangeEvent.Invoke();
         }
     }
 }
