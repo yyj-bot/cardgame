@@ -1362,7 +1362,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerData: {fileID: 2106147377}
   enemyData: {fileID: 495296932}
-  cardPrefab: {fileID: 7797751262719509154, guid: f87a22923004763419ac6bc0d2dd242d, type: 3}
+  cardPrefab: {fileID: 7797751262719509154, guid: b871f0a2a58b7cf418c71ca4268dcf10, type: 3}
   playerHand: {fileID: 2115170476}
   enemyHand: {fileID: 2024805134}
   playerBlocks:
@@ -1376,6 +1376,10 @@ MonoBehaviour:
   playericon: {fileID: 290977972}
   enemyicon: {fileID: 0}
   currentphase: 4
+  phaseChangeEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  SummonCountMax: 00000000
 --- !u!4 &1347602598
 Transform:
   m_ObjectHideFlags: 0
@@ -2028,7 +2032,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c59d8a9161e7544b9055b8e1feab262, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BattleManager: {fileID: 1347602597}
   phaseText: {fileID: 292388269}
 --- !u!1001 &1919661901
 PrefabInstance:

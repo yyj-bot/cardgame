@@ -33,6 +33,12 @@ public class Battlemanager1 : MonoSingleton<Battlemanager1>
     public GamePhase currentphase = GamePhase.gameStart;
 
     public UnityEvent phaseChangeEvent = new UnityEvent();
+
+    public int[] SummonCountMax = new int[2];
+    private int[] SummonCounter = new int[2];
+
+    private GameObject waitingMonster;
+    private int waitingPlayer;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -57,6 +63,8 @@ public class Battlemanager1 : MonoSingleton<Battlemanager1>
         DrawCard(1, 1);
 
         currentphase = GamePhase.playerDraw;
+
+        SummonCounter = SummonCountMax;
     }
     public void ReadDeck()
     {
@@ -139,6 +147,7 @@ public class Battlemanager1 : MonoSingleton<Battlemanager1>
         {
             GameObject Card = Instantiate(cardPrefab, hand);
             Card.GetComponent<CardDisplay>().card = drawDeck[0];
+            Card.GetComponent<BattleCard>().playerID  = _player;
             drawDeck.RemoveAt(0);
         }
     }
@@ -158,5 +167,46 @@ public class Battlemanager1 : MonoSingleton<Battlemanager1>
             currentphase = GamePhase.playerDraw;
             phaseChangeEvent.Invoke();
         }
+    }
+    public void SummonRequest(int _player,GameObject _monster)
+    {
+        GameObject[] blocks;
+        bool hasEmptyBlock = false;
+        if (_player == 0)
+        {
+            blocks = playerBlocks;
+        }
+        else
+        {
+            blocks = enemyBlocks;
+        }
+        if (SummonCounter[_player] > 0)
+        {
+            foreach (var block in blocks)
+            {
+                if (block.GetComponent<Block>().card == null)
+                {
+                    block.GetComponent<Block>().SummonBlock.SetActive(true);
+                    hasEmptyBlock = true;
+                }
+            }
+        }
+        if (hasEmptyBlock)
+        {
+            waitingMonster = _monster;
+            waitingPlayer = _player;
+        }
+    }
+    public void SummonConfirm(Transform _block)
+    {
+        Summon(waitingPlayer, waitingMonster, _block);
+    }
+    public void Summon(int _player, GameObject _monster, Transform _block)
+    {
+        _monster.transform.SetParent(_block);
+        _monster.transform.localPosition = Vector3.zero;
+        _monster.GetComponent<BattleCard>().state = BattleCardState.inBlock;
+        _block.GetComponent<Block>().card = _monster;
+        SummonCounter[_player]--;
     }
 }
